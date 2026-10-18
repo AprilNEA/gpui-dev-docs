@@ -1,0 +1,7 @@
+{
+  "title": "Contributing",
+  "description": "Publish a library's docs on GPUI Developers",
+  "icon": "BookOpenText",
+  "root": true,
+  "pages": ["index", "writing"]
+}

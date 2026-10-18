@@ -1,0 +1,11 @@
+.source/
+.next/
+out/
+.repos/
+.wrangler/
+.devenv*
+node_modules/
+pnpm-lock.yaml
+devenv.lock
+projects.lock.json
+lib/collections.generated.ts

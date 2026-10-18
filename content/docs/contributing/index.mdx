@@ -1,0 +1,114 @@
+---
+title: Publishing docs
+description: How a library's guides get from its repository onto GPUI Developers.
+---
+
+A library publishes guides on GPUI Developers by keeping them in its own repository, under `docs/site`. This repository, [gpui-dev-docs](https://github.com/AprilNEA/gpui-dev-docs), lists the libraries it publishes, checks out each library's `docs/site` at a pinned commit, and builds one static site from all of them.
+
+## Repository layout
+
+Put public guides in `docs/site`. Everything else in the repository stays private to the repository, including design notes in other `docs` folders.
+
+<Files>
+  <Folder name='docs' defaultOpen>
+    <Folder name='site' defaultOpen>
+      <File name='meta.json' />
+      <File name='index.mdx' />
+      <File name='getting-started.mdx' />
+      <Folder name='guides'>
+        <File name='meta.json' />
+        <File name='github-releases.mdx' />
+      </Folder>
+    </Folder>
+    <Folder name='design' />
+  </Folder>
+  <Folder name='examples'>
+    <File name='check.rs' />
+  </Folder>
+</Files>
+
+| Path                                  | Published                | Purpose                                              |
+| ------------------------------------- | ------------------------ | ---------------------------------------------------- |
+| `docs/site/index.mdx`                 | Yes, required            | The library's landing page at `/docs/<name>`         |
+| `docs/site/**/*.mdx`                  | Yes                      | Guides; the path becomes the URL                     |
+| `docs/site/**/meta.json`              | Yes                      | Page order and section separators                    |
+| `examples/**`, `crates/*/examples/**` | Only through `<include>` | Code that pages embed, so `cargo` keeps it compiling |
+| Top-level files such as `README.md`   | Only through `<include>` | Reuse without duplicating text                       |
+| Anything else                         | No                       | Never checked out by the site build                  |
+
+### Page order
+
+`docs/site/meta.json` orders the pages. The library's name, description, and icon come from the site's project registry, so the file only needs `pages`:
+
+```json title="docs/site/meta.json"
+{
+  "pages": [
+    "index",
+    "getting-started",
+    "---Guides---",
+    "guides",
+    "---Reference---",
+    "external:[API on docs.rs](https://docs.rs/gpui-updater)"
+  ]
+}
+```
+
+Pages that `pages` omits are not listed in the sidebar. Use `"..."` to append the remaining pages alphabetically.
+
+## Register a library
+
+Add an entry to `lib/projects.ts` in gpui-dev-docs:
+
+```ts title="lib/projects.ts"
+{
+  slug: 'updater',
+  name: 'gpui-updater',
+  description: 'Self-update for GPUI desktop apps, with GitHub Releases, static manifests, and Sparkle.',
+  repo: 'AprilNEA/gpui-updater',
+  category: 'distribution',
+  crates: ['gpui-updater', 'gpui-updater-core', 'gpui-updater-pre', 'gpui-updater-sparkle'],
+  icon: 'RefreshCw',
+  docs: { track: { type: 'default-branch' } },
+},
+```
+
+- `slug` is the URL segment. Choose it once; changing it breaks links.
+- `icon` is a [Lucide](https://lucide.dev/icons) icon name.
+- Omit `docs` for a library that hosts its documentation elsewhere, and set `homepage` instead. The library still appears in the directory.
+- A registered library without `docs/site` is listed as "Docs soon" until the folder exists.
+
+## Which revision is published
+
+`projects.lock.json` pins every library to a commit, and every build uses exactly those commits. A library's changes reach the site when its pin moves forward:
+
+```bash
+pnpm sync --update            # re-resolve every library
+pnpm sync --update updater    # re-resolve one library
+```
+
+The command rewrites the lock; commit it like any other change. A newly registered library gets its first pin on the next sync.
+
+A library chooses what to track in its registry entry:
+
+| `track`                               | Publishes                                     | Use when                                              |
+| ------------------------------------- | --------------------------------------------- | ----------------------------------------------------- |
+| `{ type: 'default-branch' }`          | The tip of the default branch                 | Docs should follow development, or tags are irregular |
+| `{ type: 'release', tagPrefix: 'v' }` | The newest `vX.Y.Z` tag, ignoring prereleases | Docs should match the latest crate release            |
+
+Release tracking only works when every crates.io release is tagged. Start with `default-branch` and switch once tagging is part of the release process.
+
+## Preview locally
+
+Build the site with a local working copy in place of the pinned commit:
+
+```bash
+git clone https://github.com/AprilNEA/gpui-dev-docs
+cd gpui-dev-docs
+pnpm install
+pnpm sync updater=../gpui-updater
+pnpm dev
+```
+
+The site copies the working copy's `docs/site`, `examples`, `crates/*/examples`, and top-level files. Restart `pnpm dev`, or run `pnpm sync` again, to pick up edits. Run `pnpm sync --reset` to return to the pinned revisions.
+
+The build validates frontmatter and fails on broken `<include>` paths, so a successful local build means the pages will publish.

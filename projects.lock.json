@@ -1,0 +1,42 @@
+{
+  "alloy": {
+    "track": "default-branch",
+    "ref": "main",
+    "sha": "2fb54d4dae99627c6fc71e86eb46e57640d2b677"
+  },
+  "tokio-bridge": {
+    "track": "default-branch",
+    "ref": "master",
+    "sha": "451c8fe4d805b7633768fabb2f1d06458f6c80a1"
+  },
+  "cupertino": {
+    "track": "default-branch",
+    "ref": "feat/component-library",
+    "sha": "3208e4fb8e751b6619e5b25997893618011b2809"
+  },
+  "symbols": {
+    "track": "default-branch",
+    "ref": "master",
+    "sha": "4050f25c3632ea097dece1711804b95a7e61c0c1"
+  },
+  "motion": {
+    "track": "default-branch",
+    "ref": "main",
+    "sha": "b41d1da1b40a35b10361565d9ae4c9f094806a82"
+  },
+  "shot": {
+    "track": "default-branch",
+    "ref": "master",
+    "sha": "a12f7efd1a7abdc66ff16c6bcf43572c868d0efd"
+  },
+  "updater": {
+    "track": "default-branch",
+    "ref": "master",
+    "sha": "b9606d27aa0dbc093f25363c4a5954375dd75bfc"
+  },
+  "skills": {
+    "track": "default-branch",
+    "ref": "master",
+    "sha": "3961d8cb27c345c04b592e79794eff0d278865ed"
+  }
+}

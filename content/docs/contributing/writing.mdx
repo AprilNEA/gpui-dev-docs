@@ -1,0 +1,84 @@
+---
+title: Writing pages
+description: Frontmatter, code from examples, links, and the components available to every page.
+---
+
+Pages are [MDX](https://mdxjs.com): Markdown with components. Every library renders with the same set of components and the same frontmatter, so pages look and behave the same across the site.
+
+## Frontmatter
+
+```mdx title="docs/site/guides/sparkle.mdx"
+---
+title: Sparkle
+description: Hand checking, installing, and relaunching to Sparkle.framework on macOS.
+platforms: [macos]
+since: '0.2.0'
+---
+```
+
+| Field         | Required | Meaning                                                                      |
+| ------------- | -------- | ---------------------------------------------------------------------------- |
+| `title`       | Yes      | Page title and sidebar label                                                 |
+| `description` | No       | Shown under the title and used by search and link previews                   |
+| `platforms`   | No       | Any of `macos`, `linux`, `windows`, `web`; omit when the page applies to all |
+| `since`       | No       | First crate version with the feature                                         |
+| `icon`        | No       | Lucide icon name for the sidebar                                             |
+| `full`        | No       | `true` hides the table of contents and widens the page                       |
+
+The build fails on invalid values, such as a misspelled platform.
+
+## Code from examples
+
+Embed code from `examples` (or, in a Cargo workspace, `crates/<crate>/examples`) instead of pasting it, so `cargo build --examples` keeps the snippet correct. Mark the part to show with a region:
+
+```rust title="examples/check.rs"
+fn main() {
+    // #region check
+    let updater = Updater::new(GitHubSource::new("owner/app"));
+    updater.check();
+    // #endregion check
+}
+```
+
+Then include the region; the path is relative to the page:
+
+```mdx title="docs/site/getting-started.mdx"
+<include lang='rust' meta='title="examples/check.rs"'>
+  ../../examples/check.rs#check
+</include>
+```
+
+Omit `#check` to include the whole file. Code fences written directly in a page are fine for short fragments that do not need to compile.
+
+## Links
+
+| Target                     | Write                       | Example                                                                           |
+| -------------------------- | --------------------------- | --------------------------------------------------------------------------------- |
+| A page in the same library | A relative path to the file | `[Sparkle](./guides/sparkle.mdx)`                                                 |
+| Another library            | An absolute site path       | `[SF Symbols](/docs/symbols)`                                                     |
+| Rust API                   | docs.rs                     | `[Updater](https://docs.rs/gpui-updater/latest/gpui_updater/struct.Updater.html)` |
+| GPUI itself                | gpui.rs                     | `[GPUI](https://www.gpui.rs)`                                                     |
+
+Relative file links are resolved at build time, so they keep working when the site's URL structure changes. `<Card href>` accepts the same relative paths.
+
+## Components
+
+These components are available without imports:
+
+| Component                       | Use for                                                          |
+| ------------------------------- | ---------------------------------------------------------------- |
+| `<Callout>`                     | Notes and warnings; `type="warn"` or `type="error"` for emphasis |
+| `<Cards>`, `<Card>`             | Link grids on landing pages                                      |
+| `<Tabs>`, `<Tab>`               | Platform- or variant-specific instructions                       |
+| `<Steps>`, `<Step>`             | Ordered procedures                                               |
+| `<Files>`, `<Folder>`, `<File>` | Directory trees                                                  |
+| `<Accordions>`, `<Accordion>`   | Optional detail, such as troubleshooting                         |
+| `<TypeTable>`                   | Option and field tables                                          |
+
+<Tabs items={['macOS', 'Linux', 'Windows']}>
+  <Tab value='macOS'>Tabs render like this; each tab holds any Markdown.</Tab>
+  <Tab value='Linux'>Put platform-specific steps in the matching tab.</Tab>
+  <Tab value='Windows'>Use the same labels on every page so readers recognize them.</Tab>
+</Tabs>
+
+Custom components and imports from other packages are not available; the site builds every library with one shared component set. Ask in [gpui-dev-docs](https://github.com/AprilNEA/gpui-dev-docs/issues) when a page needs something new.

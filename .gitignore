@@ -1,0 +1,32 @@
+# dependencies
+node_modules/
+
+# fumadocs / next.js
+.source/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# synced library repositories and files generated from them (scripts/sync-docs.ts)
+.repos/
+lib/collections.generated.ts
+public/_redirects
+
+# cloudflare
+.wrangler/
+.dev.vars*
+
+# devenv / direnv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+.direnv/
+.pre-commit-config.yaml
+
+# misc
+.DS_Store
+*.pem
+.env*
+npm-debug.log*
+.pnpm-debug.log*

@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Assets-only Worker: serves the Next.js static export in ./out.
+  // Bind the gpui.dev custom domain in the Cloudflare dashboard, or add
+  // "routes": [{ "pattern": "gpui.dev", "custom_domain": true }] once DNS is ready.
+  "name": "gpui-dev-docs",
+  "compatibility_date": "2026-10-05",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}
